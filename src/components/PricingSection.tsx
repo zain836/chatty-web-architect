@@ -9,86 +9,91 @@ const PricingSection = () => {
       name: "Free",
       price: "$0",
       period: "",
-      description: "Perfect for getting started",
+      description: "Perfect for trying our revolutionary AI",
       icon: Zap,
       popular: false,
       features: [
-        "Limited chat messages (50/day)",
+        "50 chat messages per day",
         "Basic AI responses",
         "Community support",
-        "Standard response time",
-        "View ads"
+        "Standard response time"
       ],
       limitations: [
-        "No code generation",
-        "No script automation",
-        "No offline mode",
-        "No chat export"
+        "🔒 No code generation",
+        "🔒 No script automation", 
+        "🔒 No offline mode",
+        "🔒 No chat export",
+        "Contains ads"
       ],
       cta: "Start Free",
-      variant: "outline"
+      variant: "outline",
+      urgency: false
     },
     {
       name: "Pro",
       price: "$9.99",
       period: "/month",
-      description: "Best for professionals and developers",
+      description: "Unlock AI superpowers for creators",
       icon: Star,
       popular: true,
       features: [
-        "Unlimited chat messages",
-        "Advanced AI responses",
-        "Code generation & debugging",
-        "Script automation",
-        "Save & export chats",
-        "Priority support",
+        "Unlimited messages & chat history",
+        "Advanced code generation",
+        "Script automation engine",
+        "Save & export everything",
+        "Priority support (< 2h)",
         "No advertisements",
-        "Advanced features"
+        "Dark mode & themes",
+        "Real-time collaboration"
       ],
       limitations: [],
-      cta: "Go Pro",
-      variant: "default"
+      cta: "Upgrade to Pro",
+      variant: "default",
+      urgency: false
     },
     {
       name: "Elite",
       price: "$49.99",
       period: "/month",
-      description: "Ultimate power user experience",
+      description: "For power users who demand everything",
       icon: Crown,
       popular: false,
       features: [
-        "Everything in Pro",
-        "Offline mode support",
-        "Stealth mode (private)",
-        "Custom AI training",
-        "API access",
-        "White-label options",
+        "Everything in Pro +",
+        "🔥 Offline mode (works anywhere)",
+        "Stealth mode & encrypted vault",
+        "AI agents & workflow automation",
+        "Custom model fine-tuning",
+        "White-label solutions",
         "24/7 phone support",
-        "Early feature access",
-        "Advanced analytics"
+        "Early beta access",
+        "Advanced analytics dashboard"
       ],
       limitations: [],
-      cta: "Unlock Elite",
-      variant: "secondary"
+      cta: "Go Elite",
+      variant: "secondary",
+      urgency: false
     },
     {
       name: "Lifetime",
       price: "$99",
-      period: "one-time",
-      description: "Pay once, use forever",
+      period: "one-time payment",
+      description: "🔥 Limited time offer - Pay once, own forever!",
       icon: Infinity,
       popular: false,
       features: [
-        "All Pro features",
-        "Lifetime access",
-        "Future updates included",
-        "No monthly bills",
-        "Priority support",
-        "Early access to new features"
+        "Everything in Elite forever",
+        "All future updates included",
+        "VIP Discord community access",
+        "Exclusive webinars & training",
+        "Direct developer access",
+        "Never pay again!"
       ],
       limitations: [],
-      cta: "Buy Lifetime",
-      variant: "outline"
+      cta: "Secure Lifetime Deal",
+      variant: "outline",
+      urgency: true,
+      badge: "🔥 Only 47 left!"
     }
   ];
 
@@ -124,6 +129,11 @@ const PricingSection = () => {
               {plan.popular && (
                 <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-primary text-primary-foreground">
                   Most Popular
+                </Badge>
+              )}
+              {plan.urgency && (
+                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-destructive text-destructive-foreground urgency-blink">
+                  🔥 Only 47 left!
                 </Badge>
               )}
               

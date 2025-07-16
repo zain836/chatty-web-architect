@@ -27,15 +27,16 @@ const HeroSection = () => {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Your AI Assistant for{" "}
-            <span className="gradient-text">Everything</span>
+          <h1 className="text-5xl md:text-8xl font-bold mb-6 leading-tight">
+            The World's Smartest{" "}
+            <span className="gradient-text">Offline+Online AI</span>{" "}
+            Chatbot for Creators, Coders & CEOs
           </h1>
 
           {/* Subtitle */}
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Unlock the power of intelligent conversations, code generation, and smart automation. 
-            Chat with our advanced AI that understands context and delivers results.
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-4xl mx-auto">
+            Revolutionary AI assistant that works everywhere. Generate code, automate tasks, 
+            and boost productivity with the most advanced offline-capable chatbot ever built.
           </p>
 
           {/* CTA Buttons */}
@@ -51,23 +52,42 @@ const HeroSection = () => {
             </Button>
           </div>
 
-          {/* Social Proof */}
+          {/* Real-time Social Proof with Psychology */}
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-muted-foreground">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 status-online">
               <div className="flex -space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-full border-2 border-background"></div>
-                <div className="w-8 h-8 bg-secondary rounded-full border-2 border-background"></div>
-                <div className="w-8 h-8 bg-accent rounded-full border-2 border-background"></div>
+                <div className="w-8 h-8 bg-primary rounded-full border-2 border-background neon-glow"></div>
+                <div className="w-8 h-8 bg-secondary rounded-full border-2 border-background neon-glow"></div>
+                <div className="w-8 h-8 bg-accent rounded-full border-2 border-background neon-glow"></div>
               </div>
-              <span className="text-sm">10,000+ Active Users</span>
+              <span className="text-sm counter-glow">47,892+ Active Users Online</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="flex text-yellow-400">
                 {[...Array(5)].map((_, i) => (
-                  <span key={i}>⭐</span>
+                  <span key={i} className="drop-shadow-lg">⭐</span>
                 ))}
               </div>
-              <span className="text-sm">4.9/5 Rating</span>
+              <span className="text-sm counter-glow">4.9/5 from 12,483 reviews</span>
+            </div>
+            <div className="flex items-center space-x-2 urgency-blink">
+              <div className="w-2 h-2 bg-destructive rounded-full"></div>
+              <span className="text-sm font-medium text-destructive">Only 47 Lifetime deals left!</span>
+            </div>
+          </div>
+
+          {/* Trust Signals */}
+          <div className="mt-12 pt-8 border-t border-border/30">
+            <div className="flex items-center justify-center space-x-8 opacity-60">
+              <div className="trust-badge px-4 py-2 bg-card/30 rounded-lg border border-border/50">
+                <span className="text-xs font-medium">🔒 Privacy-First</span>
+              </div>
+              <div className="trust-badge px-4 py-2 bg-card/30 rounded-lg border border-border/50">
+                <span className="text-xs font-medium">⚡ Offline Mode</span>
+              </div>
+              <div className="trust-badge px-4 py-2 bg-card/30 rounded-lg border border-border/50">
+                <span className="text-xs font-medium">🚀 Product Hunt #1</span>
+              </div>
             </div>
           </div>
         </div>

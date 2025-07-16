@@ -7,12 +7,14 @@ import { Card } from "@/components/ui/card";
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [onlineUsers] = useState(Math.floor(Math.random() * 1000) + 47000);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
     {
       id: 1,
       type: "bot",
-      content: "Hi! I'm your AI assistant. How can I help you today?",
+      content: "🚀 Welcome! I'm your advanced AI assistant with real-time capabilities. I can generate code, automate tasks, analyze data, and help you build anything. What revolutionary project shall we create today?",
       timestamp: new Date()
     }
   ]);
@@ -29,17 +31,27 @@ const ChatWidget = () => {
 
     setMessages([...messages, newMessage]);
     setMessage("");
+    setIsTyping(true);
 
-    // Simulate bot response
+    // Simulate realistic bot response with multiple options
     setTimeout(() => {
+      setIsTyping(false);
+      const responses = [
+        "🔥 Perfect! I can build that for you right now. Which tech stack would you prefer - React, Python, Node.js, or something else? I have access to real-time APIs and can generate production-ready code.",
+        "⚡ Excellent choice! Let me analyze your requirements and create a custom solution. I can automate this entire workflow and save you hours of manual work. Want to see the magic?",
+        "🚀 I love ambitious projects! I can help you build that with cutting-edge AI. Should I generate the frontend, backend, database schema, or all three? I work 10x faster than traditional development.",
+        "💡 Brilliant idea! I have real-time access to the latest frameworks and can create scalable solutions. Let me show you three different approaches and you can choose your favorite.",
+        "🎯 That's exactly what I excel at! I can generate clean, documented code that follows best practices. Plus, I'll include error handling and optimization. Ready to revolutionize your workflow?",
+      ];
+      
       const botResponse = {
         id: messages.length + 2,
         type: "bot",
-        content: "Thanks for your message! I'm here to help with code generation, automation scripts, and intelligent conversations. What would you like to explore?",
+        content: responses[Math.floor(Math.random() * responses.length)],
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botResponse]);
-    }, 1000);
+    }, 2000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -79,8 +91,8 @@ const ChatWidget = () => {
               <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-success rounded-full pulse-dot"></div>
             </div>
             <div>
-              <h3 className="font-semibold">AI Assistant</h3>
-              <p className="text-xs text-muted-foreground">Online • Responds instantly</p>
+              <h3 className="font-semibold">AI Assistant <span className="text-success">●</span></h3>
+              <p className="text-xs text-muted-foreground counter-glow">{onlineUsers.toLocaleString()} users online • Real-time responses</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">

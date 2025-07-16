@@ -1,0 +1,203 @@
+import { Check, Star, Zap, Crown, Infinity } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+const PricingSection = () => {
+  const plans = [
+    {
+      name: "Free",
+      price: "$0",
+      period: "",
+      description: "Perfect for getting started",
+      icon: Zap,
+      popular: false,
+      features: [
+        "Limited chat messages (50/day)",
+        "Basic AI responses",
+        "Community support",
+        "Standard response time",
+        "View ads"
+      ],
+      limitations: [
+        "No code generation",
+        "No script automation",
+        "No offline mode",
+        "No chat export"
+      ],
+      cta: "Start Free",
+      variant: "outline"
+    },
+    {
+      name: "Pro",
+      price: "$9.99",
+      period: "/month",
+      description: "Best for professionals and developers",
+      icon: Star,
+      popular: true,
+      features: [
+        "Unlimited chat messages",
+        "Advanced AI responses",
+        "Code generation & debugging",
+        "Script automation",
+        "Save & export chats",
+        "Priority support",
+        "No advertisements",
+        "Advanced features"
+      ],
+      limitations: [],
+      cta: "Go Pro",
+      variant: "default"
+    },
+    {
+      name: "Elite",
+      price: "$49.99",
+      period: "/month",
+      description: "Ultimate power user experience",
+      icon: Crown,
+      popular: false,
+      features: [
+        "Everything in Pro",
+        "Offline mode support",
+        "Stealth mode (private)",
+        "Custom AI training",
+        "API access",
+        "White-label options",
+        "24/7 phone support",
+        "Early feature access",
+        "Advanced analytics"
+      ],
+      limitations: [],
+      cta: "Unlock Elite",
+      variant: "secondary"
+    },
+    {
+      name: "Lifetime",
+      price: "$99",
+      period: "one-time",
+      description: "Pay once, use forever",
+      icon: Infinity,
+      popular: false,
+      features: [
+        "All Pro features",
+        "Lifetime access",
+        "Future updates included",
+        "No monthly bills",
+        "Priority support",
+        "Early access to new features"
+      ],
+      limitations: [],
+      cta: "Buy Lifetime",
+      variant: "outline"
+    }
+  ];
+
+  return (
+    <section id="pricing" className="py-24 bg-muted/20">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center space-x-2 bg-card/50 border border-border rounded-full px-4 py-2 mb-6">
+            <Star className="h-4 w-4 text-primary" />
+            <span className="text-sm text-muted-foreground">Simple Pricing</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Choose Your{" "}
+            <span className="gradient-text">Perfect Plan</span>
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Start free and upgrade when you're ready. No hidden fees, cancel anytime.
+          </p>
+        </div>
+
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+          {plans.map((plan, index) => (
+            <Card 
+              key={index}
+              className={`relative card-hover ${
+                plan.popular 
+                  ? 'ring-2 ring-primary shadow-glow scale-105' 
+                  : ''
+              }`}
+            >
+              {plan.popular && (
+                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-primary text-primary-foreground">
+                  Most Popular
+                </Badge>
+              )}
+              
+              <CardHeader className="text-center pb-4">
+                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-primary mb-4 mx-auto`}>
+                  <plan.icon className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <h3 className="text-xl font-bold">{plan.name}</h3>
+                <p className="text-sm text-muted-foreground">{plan.description}</p>
+              </CardHeader>
+
+              <CardContent className="pt-0">
+                {/* Price */}
+                <div className="text-center mb-6">
+                  <div className="flex items-baseline justify-center">
+                    <span className="text-4xl font-bold gradient-text">{plan.price}</span>
+                    <span className="text-muted-foreground ml-1">{plan.period}</span>
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-3 mb-6">
+                  {plan.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-start space-x-3">
+                      <Check className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{feature}</span>
+                    </div>
+                  ))}
+                  {plan.limitations.map((limitation, limitIndex) => (
+                    <div key={limitIndex} className="flex items-start space-x-3">
+                      <div className="w-4 h-4 mt-0.5 flex-shrink-0">
+                        <div className="w-2 h-2 bg-muted-foreground rounded-full mx-auto mt-1"></div>
+                      </div>
+                      <span className="text-sm text-muted-foreground">{limitation}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA */}
+                <Button 
+                  className={`w-full ${plan.popular ? 'btn-glow' : ''}`}
+                  variant={plan.variant as any}
+                  size="lg"
+                >
+                  {plan.cta}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Additional Info */}
+        <div className="text-center mt-12">
+          <p className="text-muted-foreground mb-4">
+            All plans include 30-day money-back guarantee • Cancel anytime
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-muted-foreground">
+            <span className="flex items-center space-x-2">
+              <Check className="h-4 w-4 text-success" />
+              <span>No setup fees</span>
+            </span>
+            <span className="flex items-center space-x-2">
+              <Check className="h-4 w-4 text-success" />
+              <span>Secure payment</span>
+            </span>
+            <span className="flex items-center space-x-2">
+              <Check className="h-4 w-4 text-success" />
+              <span>Instant activation</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default PricingSection;

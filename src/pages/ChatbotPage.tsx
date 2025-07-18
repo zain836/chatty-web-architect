@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, Settings, Lock, Zap, Crown, Infinity, Mic, MicOff, Eye, EyeOff, Terminal, Shield, Briefcase, Sparkles, Bot, User, Send, Minimize2, Maximize2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { MessageCircle, Settings, Lock, Zap, Crown, Infinity, Mic, MicOff, Eye, EyeOff, Terminal, Shield, Briefcase, Sparkles, Bot, User, Send, Minimize2, Maximize2, ArrowLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -14,23 +16,26 @@ import VoiceInterface from "@/components/chatbot/VoiceInterface";
 import SubscriptionModal from "@/components/chatbot/SubscriptionModal";
 
 const ChatbotPage = () => {
+  const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
     {
       id: 1,
       type: "ai",
-      content: "🔥 Welcome to ShadowTalk AI - The God of Chatbots. I'm your personal AI assistant with superpowers. What would you like to create today?",
+      content: "🔥 Welcome to ShadowTalk AI - The God of Chatbots. I'm powered by ChatGPT-4 and ready to help you with anything. What would you like to explore today?",
       timestamp: new Date(),
       personality: "mentor"
     }
   ]);
-  const [userPlan, setUserPlan] = useState("free"); // free, premium, elite, lifetime
+  const [userPlan, setUserPlan] = useState("free");
   const [isListening, setIsListening] = useState(false);
   const [stealthMode, setStealthMode] = useState(false);
   const [selectedPersonality, setSelectedPersonality] = useState("mentor");
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [dailyChats, setDailyChats] = useState(12);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [conversationId, setConversationId] = useState(null);
   const [onlineUsers] = useState(Math.floor(Math.random() * 50000) + 89000);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -61,7 +66,7 @@ const ChatbotPage = () => {
   }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() || isLoading) return;
     
     if (userPlan === "free" && dailyChats >= 15) {
       setShowSubscriptionModal(true);
@@ -77,81 +82,60 @@ const ChatbotPage = () => {
     };
 
     setMessages(prev => [...prev, newMessage]);
+    const userMessage = message;
     setMessage("");
     setDailyChats(prev => prev + 1);
+    setIsLoading(true);
 
-    // Simulate AI response based on content
-    setTimeout(() => {
-      const aiResponse = generateAIResponse(message, selectedPersonality, userPlan);
-    setMessages(prev => [...prev, {
+    try {
+      // Get current user (for now using a temporary user ID - in real app this would come from auth)
+      const tempUserId = "temp-user-" + Math.random().toString(36).substr(2, 9);
+      
+      const response = await fetch('https://ngmyhnhobctexmglqvou.supabase.co/functions/v1/chat-with-gpt4', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nbXlobmhvYmN0ZXhtZ2xxdm91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4MTk3NTUsImV4cCI6MjA2ODM5NTc1NX0.U1dvvXAFg4aeHwYei5Ri_nw5m2tkvsjEI2xW0cr1MEs`,
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          personality: selectedPersonality,
+          conversationId: conversationId,
+          userId: tempUserId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get AI response');
+      }
+
+      const data = await response.json();
+      
+      if (!conversationId) {
+        setConversationId(data.conversationId);
+      }
+
+      setMessages(prev => [...prev, {
         id: prev.length + 1,
         type: "ai",
-        content: aiResponse,
+        content: data.response,
         timestamp: new Date(),
         personality: selectedPersonality
       }]);
-    }, 1500);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setMessages(prev => [...prev, {
+        id: prev.length + 1,
+        type: "ai",
+        content: "🔒 Sorry, I'm having trouble connecting to ChatGPT-4. Please check that your OpenAI API key is configured in Supabase secrets.",
+        timestamp: new Date(),
+        personality: selectedPersonality
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const generateAIResponse = (userMessage: string, personality: string, plan: string) => {
-    const message = userMessage.toLowerCase();
-    
-    // Payload generation requests
-    if (message.includes("payload") || message.includes("exploit") || message.includes("hack")) {
-      if (plan !== "elite" && plan !== "lifetime") {
-        return "🔒 Payload Generator is an Elite feature. Upgrade to access advanced ethical hacking tools and secure script generation. Elite users get unlimited payload creation with safety guidance.";
-      }
-      return "⚡ Payload Generator activated! I can help you create ethical testing scripts. What type of payload do you need? (Reverse shell, XSS, SQL injection test, etc.) Remember: Use only for authorized testing.";
-    }
-
-    // Script writing requests
-    if (message.includes("script") || message.includes("code") || message.includes("program")) {
-      if (plan === "free") {
-        return "🔒 Advanced Script Writer requires Premium or higher. I can create basic code snippets in Free tier. Upgrade for full automation scripts, complex algorithms, and multi-language support.";
-      }
-      return "🛠️ Script Writer ready! What programming language and functionality do you need? I can create Python, JavaScript, Bash, PowerShell, and more. Specify your requirements and I'll generate clean, documented code.";
-    }
-
-    // Business planning requests
-    if (message.includes("business") || message.includes("startup") || message.includes("plan")) {
-      if (plan !== "lifetime" && plan !== "elite") {
-        return "🔒 AI Business Planner is available for Elite+ users. I can provide basic business advice in lower tiers. Upgrade for full business plan generation, pitch decks, and financial projections.";
-      }
-      return "📈 Business Intelligence activated! I can help create comprehensive business plans, analyze markets, generate pitch decks, and provide strategic insights. What's your business idea or challenge?";
-    }
-
-    // Personality-based responses
-    const responses = {
-      mentor: [
-        "🧠 I understand your question. Let me guide you through this step by step. Based on my analysis, here's what I recommend...",
-        "💡 Great question! This reminds me of a pattern I've seen before. Here's how we can approach this strategically...",
-        "🎯 I can help you solve this efficiently. Let's break it down into manageable parts and create a roadmap..."
-      ],
-      hacker: [
-        "⚡ Analyzing your request... I detect you're looking for technical solutions. Here's my tactical assessment...",
-        "🔍 Scanning available resources... I've identified several approaches. Let me show you the most effective method...",
-        "🛡️ Security protocol engaged. I'll provide you with precise, tested solutions. Initiating response sequence..."
-      ],
-      ceo: [
-        "💼 Excellent point. From a strategic perspective, this presents both opportunities and challenges. Here's my executive summary...",
-        "📊 I've analyzed the market data and trends. Based on current metrics, I recommend this approach for maximum ROI...",
-        "🚀 Time is money. Let me give you actionable insights that will drive results immediately..."
-      ],
-      therapist: [
-        "💫 I hear you, and I want you to know that what you're experiencing is valid. Let's work through this together...",
-        "🤗 Thank you for sharing that with me. It takes courage to open up. Here's how we can move forward positively...",
-        "🌟 You're doing great by seeking help. Let me offer some gentle guidance that might help you feel more empowered..."
-      ],
-      comedian: [
-        "😄 Haha, well that's an interesting way to put it! Let me tackle this with some humor and helpful advice...",
-        "🎭 You know what they say about that... Just kidding! But seriously, here's what I think would work best...",
-        "😂 I love your style! Okay, between you and me, here's the real deal on how to handle this situation..."
-      ]
-    };
-
-    const personalityResponses = responses[personality] || responses.mentor;
-    return personalityResponses[Math.floor(Math.random() * personalityResponses.length)];
-  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -170,6 +154,15 @@ const ChatbotPage = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/')}
+              className="text-muted-foreground hover:text-primary"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Button>
             <div className="relative">
               <Bot className="h-8 w-8 text-primary" />
               <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-success rounded-full pulse-dot"></div>
@@ -177,7 +170,7 @@ const ChatbotPage = () => {
             <div>
               <h1 className="text-2xl font-bold gradient-text">ShadowTalk AI</h1>
               <p className="text-sm text-muted-foreground counter-glow">
-                {onlineUsers.toLocaleString()} users online • God Mode Active
+                {onlineUsers.toLocaleString()} users online • Powered by ChatGPT-4
               </p>
             </div>
           </div>
@@ -382,6 +375,25 @@ const ChatbotPage = () => {
                     </div>
                   </div>
                 ))}
+                
+                {/* Loading indicator */}
+                {isLoading && (
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center">
+                      <Bot className="h-4 w-4 text-primary-foreground" />
+                    </div>
+                    <div className="max-w-[80%] rounded-lg p-4 bg-muted/80 text-foreground border border-border">
+                      <div className="flex items-center space-x-2">
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
+                        <span className="text-sm text-muted-foreground">ChatGPT-4 is thinking...</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
 

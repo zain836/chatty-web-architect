@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Menu, X, Bot, Zap, Globe, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navItems = [
     { name: "Features", href: "#features", icon: Zap },
@@ -17,34 +19,51 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-3">
+          <div 
+            className="flex items-center space-x-3 cursor-pointer"
+            onClick={() => navigate('/')}
+          >
             <div className="relative">
               <Bot className="h-8 w-8 text-primary" />
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full pulse-dot"></div>
             </div>
-            <span className="text-xl font-bold gradient-text">ChatBot AI</span>
+            <span className="text-xl font-bold gradient-text">ShadowTalk AI</span>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <a
+              <button
                 key={item.name}
-                href={item.href}
+                onClick={() => {
+                  if (item.name === "Pricing") {
+                    navigate('/pricing');
+                  } else {
+                    document.getElementById(item.href.substring(1))?.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
                 className="flex items-center space-x-2 text-muted-foreground hover:text-primary transition-colors"
               >
                 <item.icon className="h-4 w-4" />
                 <span>{item.name}</span>
-              </a>
+              </button>
             ))}
           </div>
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/chatbot')}
+            >
               Login
             </Button>
-            <Button size="sm" className="btn-glow">
+            <Button 
+              size="sm" 
+              className="btn-glow"
+              onClick={() => navigate('/chatbot')}
+            >
               Try Free
             </Button>
           </div>
@@ -63,21 +82,41 @@ const Navigation = () => {
           <div className="md:hidden absolute top-16 left-0 right-0 bg-background border-b border-border">
             <div className="px-4 py-6 space-y-6">
               {navItems.map((item) => (
-                <a
+                <button
                   key={item.name}
-                  href={item.href}
-                  className="flex items-center space-x-3 text-muted-foreground hover:text-primary transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => {
+                    if (item.name === "Pricing") {
+                      navigate('/pricing');
+                    } else {
+                      document.getElementById(item.href.substring(1))?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center space-x-3 text-muted-foreground hover:text-primary transition-colors w-full text-left"
                 >
                   <item.icon className="h-5 w-5" />
                   <span>{item.name}</span>
-                </a>
+                </button>
               ))}
               <div className="flex flex-col space-y-3 pt-4">
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    navigate('/chatbot');
+                    setIsMenuOpen(false);
+                  }}
+                >
                   Login
                 </Button>
-                <Button size="sm" className="btn-glow">
+                <Button 
+                  size="sm" 
+                  className="btn-glow"
+                  onClick={() => {
+                    navigate('/chatbot');
+                    setIsMenuOpen(false);
+                  }}
+                >
                   Try Free
                 </Button>
               </div>

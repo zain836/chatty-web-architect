@@ -2,8 +2,10 @@ import { Check, Star, Zap, Crown, Infinity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 const PricingSection = () => {
+  const navigate = useNavigate();
   const plans = [
     {
       name: "Free",
@@ -177,6 +179,7 @@ const PricingSection = () => {
                   className={`w-full ${plan.popular ? 'btn-glow' : ''}`}
                   variant={plan.variant as any}
                   size="lg"
+                  onClick={() => navigate('/chatbot')}
                 >
                   {plan.cta}
                 </Button>

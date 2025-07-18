@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Sparkles, Zap, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-bg.jpg";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-grid overflow-hidden">
       {/* Background */}
@@ -41,12 +43,23 @@ const HeroSection = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12">
-            <Button size="lg" className="btn-glow text-lg px-8 py-6 group">
+            <Button 
+              size="lg" 
+              className="btn-glow text-lg px-8 py-6 group"
+              onClick={() => navigate('/chatbot')}
+            >
               <MessageCircle className="mr-3 h-6 w-6" />
               Chat Now - Free
               <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="text-lg px-8 py-6"
+              onClick={() => {
+                document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
               <Zap className="mr-3 h-6 w-6" />
               View Features
             </Button>

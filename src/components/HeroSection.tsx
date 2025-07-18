@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Sparkles, Zap, ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero-bg.jpg";
@@ -5,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
   const navigate = useNavigate();
+  
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-grid overflow-hidden">
       {/* Background */}

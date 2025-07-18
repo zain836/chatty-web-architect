@@ -1,3 +1,4 @@
+import React from "react";
 import { Check, Star, Zap, Crown, Infinity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 const PricingSection = () => {
   const navigate = useNavigate();
+  
   const plans = [
     {
       name: "Free",

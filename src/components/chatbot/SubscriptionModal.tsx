@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { X, Crown, Zap, Shield, Infinity, Check, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -9,10 +10,10 @@ interface SubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentPlan: string;
-  onUpgrade: (plan: string) => void;
 }
 
-const SubscriptionModal = ({ isOpen, onClose, currentPlan, onUpgrade }: SubscriptionModalProps) => {
+const SubscriptionModal = ({ isOpen, onClose, currentPlan }: SubscriptionModalProps) => {
+  const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState("");
 
   const plans = [
@@ -87,9 +88,8 @@ const SubscriptionModal = ({ isOpen, onClose, currentPlan, onUpgrade }: Subscrip
   ];
 
   const handleUpgrade = (planId: string) => {
-    onUpgrade(planId);
+    navigate('/pricing');
     onClose();
-    // In a real app, this would integrate with Stripe/payment processor
   };
 
   return (

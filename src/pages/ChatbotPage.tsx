@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { MessageCircle, Settings, Lock, Zap, Crown, Infinity, Mic, MicOff, Eye, EyeOff, Terminal, Shield, Briefcase, Sparkles, Bot, User, Send, Minimize2, Maximize2, ArrowLeft } from "lucide-react";
+import { MessageCircle, Settings, Lock, Zap, Crown, Infinity, Mic, MicOff, Eye, EyeOff, Terminal, Shield, Briefcase, Sparkles, Bot, User, Send, Minimize2, Maximize2, ArrowLeft, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/components/ui/use-toast";
 import PayloadGenerator from "@/components/chatbot/PayloadGenerator";
 import ScriptWriter from "@/components/chatbot/ScriptWriter";
 import BusinessPlanner from "@/components/chatbot/BusinessPlanner";
@@ -17,6 +19,8 @@ import SubscriptionModal from "@/components/chatbot/SubscriptionModal";
 
 const ChatbotPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { user, userPlan, signOut } = useAuth();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
     {
@@ -27,7 +31,6 @@ const ChatbotPage = () => {
       personality: "mentor"
     }
   ]);
-  const [userPlan, setUserPlan] = useState("free");
   const [isListening, setIsListening] = useState(false);
   const [stealthMode, setStealthMode] = useState(false);
   const [selectedPersonality, setSelectedPersonality] = useState("mentor");
@@ -38,6 +41,13 @@ const ChatbotPage = () => {
   const [conversationId, setConversationId] = useState(null);
   const [onlineUsers] = useState(Math.floor(Math.random() * 50000) + 89000);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
+    }
+  }, [user, navigate]);
 
   const personalities = [
     { id: "mentor", name: "AI Mentor", icon: "🧠", description: "Wise and supportive" },
@@ -88,37 +98,29 @@ const ChatbotPage = () => {
     setIsLoading(true);
 
     try {
-      // Get current user (for now using a temporary user ID - in real app this would come from auth)
-      const tempUserId = "temp-user-" + Math.random().toString(36).substr(2, 9);
-      
-      const response = await fetch('https://ngmyhnhobctexmglqvou.supabase.co/functions/v1/chat-with-gpt4', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nbXlobmhvYmN0ZXhtZ2xxdm91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4MTk3NTUsImV4cCI6MjA2ODM5NTc1NX0.U1dvvXAFg4aeHwYei5Ri_nw5m2tkvsjEI2xW0cr1MEs`,
-        },
-        body: JSON.stringify({
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      const { data: responseData, error } = await supabase.functions.invoke('chat-with-gpt4', {
+        body: {
           message: userMessage,
           personality: selectedPersonality,
           conversationId: conversationId,
-          userId: tempUserId
-        }),
+          userId: user.id
+        },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get AI response');
-      }
-
-      const data = await response.json();
+      if (error) throw error;
       
-      if (!conversationId) {
-        setConversationId(data.conversationId);
+      if (!conversationId && responseData?.conversationId) {
+        setConversationId(responseData.conversationId);
       }
 
       setMessages(prev => [...prev, {
         id: prev.length + 1,
         type: "ai",
-        content: data.response,
+        content: responseData?.response || "Sorry, I couldn't process your request.",
         timestamp: new Date(),
         personality: selectedPersonality
       }]);
@@ -197,6 +199,15 @@ const ChatbotPage = () => {
               onClick={() => setIsMinimized(!isMinimized)}
             >
               {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signOut}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <LogOut className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -425,7 +436,6 @@ const ChatbotPage = () => {
         isOpen={showSubscriptionModal}
         onClose={() => setShowSubscriptionModal(false)}
         currentPlan={userPlan}
-        onUpgrade={setUserPlan}
       />
     </div>
   );

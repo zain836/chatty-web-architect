@@ -30,6 +30,11 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Validate userId is a proper UUID
+    if (!userId || typeof userId !== 'string') {
+      throw new Error('Valid userId is required');
+    }
+
     // Get or create conversation
     let currentConversationId = conversationId;
     if (!currentConversationId) {

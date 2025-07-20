@@ -18,6 +18,9 @@ serve(async (req) => {
   }
 
   try {
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key not configured in Supabase secrets');
+    }
     const { message, personality = 'mentor', conversationId, userId } = await req.json();
 
     if (!message || !userId) {

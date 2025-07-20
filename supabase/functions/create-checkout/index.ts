@@ -42,6 +42,11 @@ serve(async (req) => {
         price: 2000, // $20 in cents
         interval: "month"
       },
+      elite: {
+        name: "Elite Subscription", 
+        price: 4999, // $49.99 in cents
+        interval: "month"
+      },
       lifetime: {
         name: "Lifetime Access",
         price: 10000000, // $100,000 in cents

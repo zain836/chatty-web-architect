@@ -1,12 +1,66 @@
-import React from "react";
+import React, { useState } from "react";
 import { Check, Star, Zap, Crown, Infinity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const PricingSection = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const handleSubscription = async (planName: string) => {
+    if (planName === "Free") {
+      navigate('/chatbot');
+      return;
+    }
+
+    setLoading(planName);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to purchase a subscription.",
+          variant: "destructive",
+        });
+        navigate('/auth');
+        return;
+      }
+
+      let plan = 'pro';
+      if (planName === 'Elite') plan = 'elite';
+      if (planName === 'Lifetime') plan = 'lifetime';
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { plan },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      toast({
+        title: "Payment Error",
+        description: error instanceof Error ? error.message : "Failed to start payment process",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(null);
+    }
+  };
   
   const plans = [
     {
@@ -35,7 +89,7 @@ const PricingSection = () => {
     },
     {
       name: "Pro",
-      price: "$9.99",
+      price: "$20",
       period: "/month",
       description: "Unlock AI superpowers for creators",
       icon: Star,
@@ -80,7 +134,7 @@ const PricingSection = () => {
     },
     {
       name: "Lifetime",
-      price: "$99",
+      price: "$100,000",
       period: "one-time payment",
       description: "🔥 Limited time offer - Pay once, own forever!",
       icon: Infinity,
@@ -181,9 +235,10 @@ const PricingSection = () => {
                   className={`w-full ${plan.popular ? 'btn-glow' : ''}`}
                   variant={plan.variant as any}
                   size="lg"
-                  onClick={() => navigate('/chatbot')}
+                  onClick={() => handleSubscription(plan.name)}
+                  disabled={loading === plan.name}
                 >
-                  {plan.cta}
+                  {loading === plan.name ? 'Processing...' : plan.cta}
                 </Button>
               </CardContent>
             </Card>
